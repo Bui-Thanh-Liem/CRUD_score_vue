@@ -128,8 +128,7 @@ export default {
       name: '',
       mssv: '',
       phone: '',
-      email: '',
-      studentScore: {}
+      email: ''
     })
     const isUpdate = ref(false)
     const currentId = ref('')
@@ -156,15 +155,18 @@ export default {
       form.name = ''
       form.mssv = ''
       form.phone = ''
+      form.email = ''
       isUpdate.value = false
     }
 
-    const handlSubmitUpdate = () => {
+    const handlSubmitUpdate = async () => {
       isUpdate.value = false
-      updateStudent(currentId.value, { ...form })
+      const stu = await getStudent(currentId.value)
+      updateStudent(currentId.value, { ...stu, ...form })
       form.name = ''
       form.mssv = ''
       form.phone = ''
+      form.email = ''
     }
 
     const students = useLoadStudents()

@@ -66,6 +66,16 @@
               </button>
             </td>
           </tr>
+          <tr>
+            <td colspan="6"></td>
+            <td colspan="3">
+              Tổng kết <span class="text-danger">{{ keyHK }}</span
+              >:
+              <span class="text-success fw-bold">{{
+                getScoreGpaHk(item)
+              }}</span>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -130,7 +140,7 @@
         <label for="score" class="">
           Điểm:
           <span v-show="!isUpdate"
-            >(Lần thêm đầu tiên sẽ là
+            >(Lần thêm đầu tiên thêm điểm môn học mới sẽ là
             <strong class="text-info">thường kì 1</strong>)</span
           >
         </label>
@@ -208,6 +218,18 @@ export default {
       return ((th1 + th2 + gk * 2 + ck * 3) / 7).toFixed(1)
     }
 
+    const getScoreGpaHk = item => {
+      let gpa = 0
+      const keys = Object.keys(item)
+      for (const key in item) {
+        const { tk1, tk2, gk, ck } = item[key]
+        gpa += Number(getScoreGPA(tk1, tk2, gk, ck))
+      }
+      return (gpa / keys.length).toFixed(1) == 'NaN'
+        ? '-'
+        : (gpa / keys.length).toFixed(1)
+    }
+
     const createScore = async () => {
       const keyHK = Object.keys(student.studentScore)
       var addScore = {}
@@ -228,6 +250,7 @@ export default {
               }
             }
           } else {
+            alert('Không được trùng môn học trong 1 học kì')
             return student
           }
         } else {
@@ -286,22 +309,23 @@ export default {
     }
 
     const handeChangeScoreCol = val => {
-      switch (val.target.value) {
-        case 'tk1':
-          form.score = student.studentScore[form.hk][form.subject].tk1
-          break
-        case 'tk2':
-          form.score = student.studentScore[form.hk][form.subject].tk2
-          break
-        case 'gk':
-          form.score = student.studentScore[form.hk][form.subject].gk
-          break
-        case 'ck':
-          form.score = student.studentScore[form.hk][form.subject].ck
-          break
-        default:
-          break
-      }
+      form.score = student.studentScore[form.hk][form.subject][val.target.value]
+      // switch (val.target.value) {
+      //   case 'tk1':
+      //     form.score = student.studentScore[form.hk][form.subject].tk1
+      //     break
+      //   case 'tk2':
+      //     form.score = student.studentScore[form.hk][form.subject].tk2
+      //     break
+      //   case 'gk':
+      //     form.score = student.studentScore[form.hk][form.subject].gk
+      //     break
+      //   case 'ck':
+      //     form.score = student.studentScore[form.hk][form.subject].ck
+      //     break
+      //   default:
+      //     break
+      // }
     }
 
     const handlClickExit = () => {
@@ -331,7 +355,8 @@ export default {
       handlClickExit,
       handeChangeScoreCol,
       handlSubmitUpdate,
-      deleteSubject
+      deleteSubject,
+      getScoreGpaHk
     }
   }
 }
